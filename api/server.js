@@ -1,6 +1,7 @@
 // Import necessary libraries
 import express from 'express'; // Import the Express library
 import dotenv from 'dotenv'; // Import the Dotenv library
+import cors from 'cors';
 import connectDB from './config/db.js'; // Import the database connection function
 
 // Import routes
@@ -33,3 +34,6 @@ app.use('/api/auth', authRoutes); // Use the authentication routes for requests 
 
 //Error Middleware
 app.use(errorHandler);
+
+//cors
+app.use(cors());

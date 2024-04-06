@@ -2,6 +2,8 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
+import { Toaster } from 'react-hot-toast';
+
 // Define lazy-loaded components
 const Home = lazy(() => import('./pages/home.page'));
 const About = lazy(() => import('./pages/about.page'));
@@ -18,6 +20,13 @@ export default function App() {
   return (
     <BrowserRouter>
       {/* Load the sharing component header */}
+      <div>
+        <Toaster
+          position='top-right'
+          reverseOrder={false}
+        />
+      </div>
+
       <Header />
       {/* Use the Suspense component to handle lazy loading */}
       <Suspense fallback={<div>Loading...</div>}>
