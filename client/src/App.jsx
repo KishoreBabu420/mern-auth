@@ -9,11 +9,16 @@ const Profile = lazy(() => import('./pages/profile.page'));
 const Login = lazy(() => import('./pages/login.page'));
 const Register = lazy(() => import('./pages/register.page'));
 
+//import Necessary Components
+import { Header } from './components';
+
 // Export the App component
 export default function App() {
   // Return the BrowserRouter component with Routes and Route components
   return (
     <BrowserRouter>
+      {/* Load the sharing component header */}
+      <Header />
       {/* Use the Suspense component to handle lazy loading */}
       <Suspense fallback={<div>Loading...</div>}>
         <Routes>
