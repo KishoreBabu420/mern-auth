@@ -3,6 +3,9 @@ import express from 'express';
 import dotenv from 'dotenv';
 import connectDB from './config/db.js';
 
+//import routes
+import userRoutes from './routes/user.route.js';
+
 // Configure environment variables
 dotenv.config();
 
@@ -19,3 +22,6 @@ const app = express();
 app.listen(port, () => {
   console.log(`Server started on port ${port}`);
 });
+
+//API paths
+app.use('/api/user', userRoutes);
