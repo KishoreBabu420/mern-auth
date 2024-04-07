@@ -31,7 +31,6 @@ app.listen(port, () => {
 // API paths
 app.use('/api/user', userRoutes); // Use the user routes for requests to the /api/user path
 app.use('/api/auth', authRoutes); // Use the authentication routes for requests to the /api/auth path
-
 //Error Middleware
 app.use(errorMiddleWare);
 

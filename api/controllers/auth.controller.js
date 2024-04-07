@@ -2,7 +2,6 @@ import expressAsyncHandler from 'express-async-handler';
 import User from '../models/user.model.js';
 
 import bcryptjs from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 
 import { signToken, errorHandler } from '../utils/index.js';
 
@@ -77,8 +76,67 @@ export const login = expressAsyncHandler(async (req, res, next) => {
         ...rest,
         message: 'Login Successful',
         success: true,
-        access_toke: token,
       });
+  } catch (err) {
+    next(errorHandler(500, err.message || 'Internal server error'));
+  }
+});
+
+// @desc    Login using google
+// @route   POST /api/auth/google
+// @access  Public
+export const google = expressAsyncHandler(async (req, res, next) => {
+  try {
+    const validUser = await User.findOne({ email: req.body.email });
+    if (validUser) {
+      // If everything is good send back a token
+      const token = await signToken(validUser._id);
+      const { password: hashedPassword, ...rest } = validUser._doc;
+
+      res
+        .cookie('access_token', token, {
+          httpOnly: true,
+          expires: new Date(Date.now() + 8 * 60 * 60 * 1000),
+        }) // Set expiry to 8 hours
+        .status(200)
+        .json({
+          ...rest,
+          message: 'Login Successful',
+          success: true,
+        });
+    } else {
+      const generatedPassword =
+        Math.random().toString(36).slice(-8) +
+        Math.random().toString(36).slice(-8);
+      const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
+
+      const newUser = new User({
+        username: `Google-${req.body.username
+          .replaceAll(' ', '')
+          .toLowerCase()}-${Math.random().toString(36).slice(-8)}`,
+        email: req.body.email,
+        password: hashedPassword,
+        profilePicture: req.body.photoURL,
+      });
+
+      await newUser.save();
+
+      // If everything is good send back a token
+      const token = await signToken(newUser._id);
+      const { password: hashedPassword2, ...rest } = newUser._doc;
+
+      res
+        .cookie('access_token', token, {
+          httpOnly: true,
+          expires: new Date(Date.now() + 8 * 60 * 60 * 1000),
+        }) // Set expiry to 8 hours
+        .status(200)
+        .json({
+          ...rest,
+          message: 'Login Successful',
+          success: true,
+        });
+    }
   } catch (err) {
     next(errorHandler(500, err.message || 'Internal server error'));
   }
