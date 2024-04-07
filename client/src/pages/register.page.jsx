@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
@@ -10,7 +10,9 @@ const initialUser = {
 };
 const Register = () => {
   const [user, setUser] = useState(initialUser);
+  const [isLoading, setIsLoading] = useState(false);
   const { username, email, password } = user;
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
@@ -20,14 +22,24 @@ const Register = () => {
     e.preventDefault();
     if (username && email && password) {
       try {
+        setIsLoading(true);
         const newUser = { username, email, password };
         const res = await axios.post(`/api/auth/register`, newUser);
-        toast.success(res.data.message);
+        if (res.data.success) {
+          setIsLoading(false);
+          toast.success(res.data.message);
+          setTimeout(() => {
+            navigate('/login');
+          }, 1000);
+        }
       } catch (error) {
+        setIsLoading(false);
         toast.error(error.response.data.message);
       } finally {
         setUser(initialUser);
       }
+    } else {
+      toast.error(`All fields are required`);
     }
   };
   return (
@@ -67,10 +79,11 @@ const Register = () => {
         />
 
         <button
+          disabled={isLoading}
           type='submit'
           className='p-3 text-white uppercase rounded-lg shadow-lg bg-slate-700 hover:opacity-95 disabled:opacity-80'
         >
-          Create An Account
+          {isLoading ? 'Loading...' : 'Create an Account'}
         </button>
       </form>
 
@@ -78,7 +91,7 @@ const Register = () => {
         <p>
           Have an account? &nbsp;
           <span className='text-blue-500'>
-            <Link to='login'>Login</Link>
+            <Link to='/login'>Login</Link>
           </span>
         </p>
       </div>

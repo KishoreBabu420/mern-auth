@@ -22,7 +22,9 @@ export const register = expressAsyncHandler(async (req, res, next) => {
     // Save the new user to the database
     await newUser.save();
     // Send a 201 status code and a success message
-    res.status(201).json({ message: 'User created successfully' });
+    res
+      .status(201)
+      .json({ message: 'User created successfully', success: true });
   } catch (error) {
     if (error.name === 'MongoServerError' && error.code === 11000) {
       const duplicateField = error.errmsg.match(/index: (.*)_1/)[1];
@@ -71,7 +73,12 @@ export const login = expressAsyncHandler(async (req, res, next) => {
         expires: new Date(Date.now() + 8 * 60 * 60 * 1000),
       }) // Set expiry to 8 hours
       .status(200)
-      .json({ ...rest, message: 'Login Successful' });
+      .json({
+        ...rest,
+        message: 'Login Successful',
+        success: true,
+        access_toke: token,
+      });
   } catch (err) {
     console.log(err);
     errorHandler(res, err.message || 'Internal server error');
