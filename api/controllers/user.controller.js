@@ -1,25 +1,34 @@
+// Import necessary modules
 import expressAsyncHandler from 'express-async-handler';
 import User from '../models/user.model.js';
+import { errorHandler } from '../utils/index.js';
 
+// Test route to check if API is working
+// @route   GET /api/test
+// @access  Public
 export const test = (req, res) => {
   res.json({
     message: 'API is working',
   });
 };
 
-// @desc    Update existing user
-// @route   POST /api/user/update:id
+// Update existing user
+// @desc    Update user details for the currently authenticated user
+// @route   POST /api/user/update/:id
 // @access  Private
 export const updateUser = expressAsyncHandler(async (req, res, next) => {
+  // Check if the user is trying to update someone else's account
   if (req.user.id !== req.params.id) {
     return next(errorHandler(401, 'You can update only your account!'));
   }
 
   try {
+    // Hash the new password if provided
     if (req.body.password) {
       req.body.password = bcryptjs.hashSync(req.body.password, 10);
     }
 
+    // Update the user document in the database
     const updatedUser = await User.findByIdAndUpdate(
       req.user.id,
       {
@@ -32,19 +41,20 @@ export const updateUser = expressAsyncHandler(async (req, res, next) => {
       },
       {
         new: true,
-        runValidators: true,
       },
     );
 
+    // Remove the hashed password from the response
     const { password: hashedPassword, ...rest } = updatedUser._doc;
-    // Send a 201 status code and a success message
+
+    // Send a 200 status code and a success message
     res.status(200).json({
       ...rest,
       message: 'Successfully updated',
       success: true,
     });
   } catch (error) {
-    // other errors for the middleware to handle
+    // Forward other errors to the error handling middleware
     next(error);
   }
 });

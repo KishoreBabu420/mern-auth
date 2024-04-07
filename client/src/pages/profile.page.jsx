@@ -4,12 +4,24 @@ import { useState, useRef, useEffect } from 'react';
 import { uploadFile } from '../utils/firebase';
 
 import { toast } from 'react-hot-toast';
+import axios from 'axios';
 
 const Profile = () => {
   const { currentUser } = useSelector((state) => state.user);
   const fileRef = useRef();
   const [image, setImage] = useState(undefined);
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState({
+    username: currentUser.username,
+    email: currentUser.email,
+    password: '',
+    profilePicture: currentUser.profilePicture,
+  });
+
+  const { username, email, password } = user;
+
+  const handleChange = (e) => {
+    setUser({ ...user, [e.target.name]: e.target.value });
+  };
 
   useEffect(() => {
     if (image) {
@@ -47,10 +59,37 @@ const Profile = () => {
         toast.error(error.message);
       });
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const updatedUser = {
+        username: user.username,
+        email: user.email,
+        password: user.password,
+        profilePicture: user.profilePicture,
+      };
+      console.log(updatedUser);
+      const res = await axios.post(
+        `/api/user/update/${currentUser._id}`,
+        updatedUser,
+      );
+      if (res.data.success) {
+        toast.success(res.data.message);
+      } else {
+        toast.error('Something went wrong!');
+      }
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+  };
   return (
     <main className='max-w-lg p-3 mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
-      <form className='flex flex-col gap-6'>
+      <form
+        className='flex flex-col gap-6'
+        onSubmit={handleSubmit}
+      >
         <input
           type='file'
           ref={fileRef}
@@ -68,25 +107,30 @@ const Profile = () => {
           type='text'
           id='username'
           name='username'
-          defaultValue={currentUser.username}
           placeholder='Username'
           className='p-3 rounded-lg bg-slate-100'
+          value={username}
+          onChange={handleChange}
         />
 
         <input
           type='email'
           id='email'
           name='email'
-          defaultValue={currentUser.email}
           placeholder='Email'
           className='p-3 rounded-lg bg-slate-100'
+          value={email}
+          onChange={handleChange}
         />
 
         <input
           type='password'
           id='password'
           placeholder='Password'
+          name='password'
           className='p-3 rounded-lg bg-slate-100'
+          value={password}
+          onChange={handleChange}
         />
 
         <button className='p-3 text-white uppercase rounded-lg bg-slate-700 hover:opacity-95 disabled:opacity-80'>
