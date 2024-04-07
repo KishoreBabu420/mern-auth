@@ -1,3 +1,3 @@
 import Header from './header.component';
-
-export { Header };
+import OAuth from './oauth.component';
+export { Header, OAuth };

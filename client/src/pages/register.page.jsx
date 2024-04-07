@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { OAuth } from '../components';
 
 const initialUser = {
   username: '',
@@ -85,6 +86,7 @@ const Register = () => {
         >
           {isLoading ? 'Loading...' : 'Create an Account'}
         </button>
+        <OAuth />
       </form>
 
       <div className='flex justify-center gap-2 mt-5 text-center'>

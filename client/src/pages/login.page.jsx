@@ -10,6 +10,7 @@ import {
   loginSuccess,
   loginFailure,
 } from '../redux/user/user.slice';
+import { OAuth } from '../components';
 
 const initialUser = {
   email: '',
@@ -85,6 +86,7 @@ const Login = () => {
         >
           {loading ? 'Loading...' : 'Sign In'}
         </button>
+        <OAuth />
       </form>
 
       <div className='flex justify-center gap-2 mt-5 text-center'>
