@@ -28,9 +28,9 @@ const Login = () => {
           setIsLoading(false);
           toast.success(res.data.message);
           localStorage.setItem('user', JSON.stringify(res.data));
-          //  setTimeout(() => {
-          //    navigate('/login');
-          //  }, 1000);
+          setTimeout(() => {
+            navigate('/home');
+          }, 1000);
         }
       } catch (error) {
         setIsLoading(false);

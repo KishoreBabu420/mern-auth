@@ -80,7 +80,6 @@ export const login = expressAsyncHandler(async (req, res, next) => {
         access_toke: token,
       });
   } catch (err) {
-    console.log(err);
-    errorHandler(res, err.message || 'Internal server error');
+    next(errorHandler(500, err.message || 'Internal server error'));
   }
 });
