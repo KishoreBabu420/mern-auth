@@ -2,6 +2,7 @@
 import express from 'express'; // Import the Express library
 import dotenv from 'dotenv'; // Import the Dotenv library
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import connectDB from './config/db.js'; // Import the database connection function
 
 // Import routes
@@ -21,6 +22,8 @@ const port = process.env.PORT || 8000; // Set the port number to either the valu
 // Initialize the Express app
 const app = express(); // Create an Express application
 app.use(express.json()); // Use the JSON middleware for parsing JSON-encoded request bodies
+
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: false })); // Use the URL-encoded middleware for parsing URL-encoded request bodies
 
 // Start the server

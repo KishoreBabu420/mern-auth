@@ -9,6 +9,17 @@ export const signToken = async (id) => {
 
   return await jwt.sign({ id }, process.env.SECRET, options);
 };
+
+export const verifyToken = (req, res, next) => {
+  const token = req.cookies.access_token;
+  if (!token) return next(errorHandler(401, 'You need to login'));
+
+  jwt.verify(token, process.env.SECRET, (err, decoded) => {
+    if (err) return next(errorHandler(403, 'Token is not valid'));
+    req.user = decoded;
+    next();
+  });
+};
 export const errorHandler = (statusCode, message) => {
   const error = new Error();
   error.statusCode = statusCode;
