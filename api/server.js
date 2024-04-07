@@ -7,7 +7,7 @@ import connectDB from './config/db.js'; // Import the database connection functi
 // Import routes
 import userRoutes from './routes/user.route.js'; // Import user routes
 import authRoutes from './routes/auth.route.js'; // Import authentication routes
-import errorHandler from './middleware/error.middleware.js';
+import errorMiddleWare from './middleware/error.middleware.js';
 
 // Configure environment variables
 dotenv.config(); // Load environment variables from.env file
@@ -33,7 +33,7 @@ app.use('/api/user', userRoutes); // Use the user routes for requests to the /ap
 app.use('/api/auth', authRoutes); // Use the authentication routes for requests to the /api/auth path
 
 //Error Middleware
-app.use(errorHandler);
+app.use(errorMiddleWare);
 
 //cors
 app.use(cors());
