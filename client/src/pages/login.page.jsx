@@ -73,7 +73,7 @@ const Login = () => {
           type='submit'
           className='p-3 text-white uppercase rounded-lg shadow-lg bg-slate-700 hover:opacity-95 disabled:opacity-80'
         >
-          Sign In
+          {isLoading ? 'Loading...' : 'Sign In'}
         </button>
       </form>
 
