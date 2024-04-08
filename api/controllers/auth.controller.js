@@ -141,3 +141,14 @@ export const google = expressAsyncHandler(async (req, res, next) => {
     next(errorHandler(500, err.message || 'Internal server error'));
   }
 });
+
+// @desc    Logout User
+// @route   POST /api/auth/logout
+// @access  Private
+export const logout = expressAsyncHandler(async (req, res) => {
+  res.clearCookie('access_token');
+  res.status(200).json({
+    message: 'Logout Successful',
+    success: true,
+  });
+});

@@ -13,6 +13,7 @@ import {
   deleteUserFailure,
   deleteUserStart,
   deleteUserSuccess,
+  logout,
 } from '../redux/user/user.slice';
 
 const Profile = () => {
@@ -134,6 +135,42 @@ const Profile = () => {
     }
   };
 
+  const handleLogout = async () => {
+    const logoutUser = async () => {
+      return await axios.get(`/api/auth/logout`);
+    };
+
+    try {
+      toast((t) => (
+        <span>
+          Are you <b>Sure? </b>
+          <button
+            onClick={() => {
+              // Use toast.promise for upload with notifications
+              toast
+                .promise(logoutUser(), {
+                  loading: 'Logging Out...',
+                  success: <b>Successfully Logout!</b>,
+                  error: <b>Failed to logout</b>,
+                })
+                .then(() => {
+                  dispatch(logout());
+                })
+                .catch((error) => {
+                  toast.error(error.message);
+                })
+                .then(() => toast.dismiss(t.id));
+            }}
+          >
+            Logout
+          </button>
+        </span>
+      ));
+    } catch (err) {
+      toast.error(err.data.message);
+    }
+  };
+
   return (
     <main className='max-w-lg p-3 mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
@@ -195,7 +232,12 @@ const Profile = () => {
         >
           Delete your account
         </p>
-        <p className='text-center text-red-700 cursor-pointer'>Sign Out</p>
+        <p
+          className='text-center text-red-700 cursor-pointer'
+          onClick={handleLogout}
+        >
+          Sign Out
+        </p>
       </div>
     </main>
   );
