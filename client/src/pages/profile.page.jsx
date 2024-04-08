@@ -10,6 +10,9 @@ import {
   updateUserStart,
   updateUserFailure,
   updateUserSuccess,
+  deleteUserFailure,
+  deleteUserStart,
+  deleteUserSuccess,
 } from '../redux/user/user.slice';
 
 const Profile = () => {
@@ -93,6 +96,44 @@ const Profile = () => {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    const deleteUser = async () => {
+      return await axios.delete(`/api/user/delete/${currentUser._id}`);
+    };
+    try {
+      dispatch(deleteUserStart());
+      toast((t) => (
+        <span>
+          Are you <b>Sure? </b>
+          <button
+            onClick={() => {
+              // Use toast.promise for upload with notifications
+              toast
+                .promise(deleteUser(), {
+                  loading: 'Deleting...',
+                  success: <b>User Deleted successfully!</b>,
+                  error: <b>User Deleting failed!</b>,
+                })
+                .then(() => {
+                  dispatch(deleteUserSuccess());
+                })
+                .catch((error) => {
+                  toast.error(error.message);
+                  dispatch(deleteUserFailure());
+                })
+                .then(() => toast.dismiss(t.id));
+            }}
+          >
+            Delete
+          </button>
+        </span>
+      ));
+    } catch (err) {
+      dispatch(deleteUserFailure());
+      toast.error(err.data.message);
+    }
+  };
+
   return (
     <main className='max-w-lg p-3 mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
@@ -148,7 +189,10 @@ const Profile = () => {
         </button>
       </form>
       <div className='flex justify-between gap-2 mt-5'>
-        <p className='text-center text-red-700 cursor-pointer'>
+        <p
+          className='text-center text-red-700 cursor-pointer'
+          onClick={handleDeleteAccount}
+        >
           Delete your account
         </p>
         <p className='text-center text-red-700 cursor-pointer'>Sign Out</p>

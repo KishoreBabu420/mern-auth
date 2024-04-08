@@ -58,3 +58,26 @@ export const updateUser = expressAsyncHandler(async (req, res, next) => {
     next(error);
   }
 });
+
+// Delete existing user
+// @desc    Delete user details for the currently authenticated user
+// @route   POST /api/user/delete/:id
+// @access  Private
+
+export const deleteUser = expressAsyncHandler(async (req, res, next) => {
+  // Check if the user is trying to update someone else's account
+  if (req.user.id !== req.params.id) {
+    return next(errorHandler(401, 'You can Delete only your account!'));
+  }
+
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    // Send a 200 status code and a success message
+    res.status(200).json({
+      message: 'User Deleted',
+      success: true,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
