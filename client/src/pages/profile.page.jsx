@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useState, useRef, useEffect } from 'react';
 
 import { uploadFile } from '../utils/firebase';
@@ -6,9 +6,16 @@ import { uploadFile } from '../utils/firebase';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 
+import {
+  updateUserStart,
+  updateUserFailure,
+  updateUserSuccess,
+} from '../redux/user/user.slice';
+
 const Profile = () => {
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser, loading, error } = useSelector((state) => state.user);
   const fileRef = useRef();
+  const dispatch = useDispatch();
   const [image, setImage] = useState(undefined);
   const [user, setUser] = useState({
     username: currentUser.username,
@@ -63,26 +70,29 @@ const Profile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      dispatch(updateUserStart());
       const updatedUser = {
         username: user.username,
         email: user.email,
         password: user.password,
         profilePicture: user.profilePicture,
       };
-      console.log(updatedUser);
       const res = await axios.post(
         `/api/user/update/${currentUser._id}`,
         updatedUser,
       );
       if (res.data.success) {
         toast.success(res.data.message);
+        dispatch(updateUserSuccess(res.data));
       } else {
+        dispatch(updateUserFailure(res.data));
         toast.error('Something went wrong!');
       }
-    } catch (error) {
-      toast.error(error.response.data.message);
+    } catch (err) {
+      toast.error(error.message ? error.message : 'Something went wrong!');
     }
   };
+
   return (
     <main className='max-w-lg p-3 mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
@@ -134,7 +144,7 @@ const Profile = () => {
         />
 
         <button className='p-3 text-white uppercase rounded-lg bg-slate-700 hover:opacity-95 disabled:opacity-80'>
-          Update
+          {loading ? 'Loading...' : 'Update'}
         </button>
       </form>
       <div className='flex justify-between gap-2 mt-5'>
